@@ -2,7 +2,6 @@
 session_start();
 require_once '../config/db_config.php';
  
-//  Only customers can see their own bookings
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'customer') {
     header("Location: ../controller/login.php");
     exit();
@@ -10,11 +9,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'customer') {
  
 $user_id = $_SESSION['user_id'];
  
-// SQL to get bookings, joining with the turfs table to get the Turf Name
-$sql = "SELECT b.*, t.name as turf_name, t.location 
-        FROM bookings b 
-        JOIN turfs t ON b.turf_id = t.id 
-        WHERE b.user_id = $user_id 
+$sql = "SELECT b.*, t.name as turf_name, t.location
+        FROM bookings b
+        JOIN turfs t ON b.turf_id = t.id
+        WHERE b.user_id = $user_id
         ORDER BY b.booking_date DESC";
  
 $result = $conn->query($sql);
@@ -38,6 +36,7 @@ include '../includes/customer_header.php';
 <th style="padding: 15px;">Date & Time</th>
 <th style="padding: 15px;">Total Price</th>
 <th style="padding: 15px;">Status</th>
+<th style="padding: 15px; text-align: center;">Action</th>
 </tr>
 </thead>
 <tbody>
@@ -56,22 +55,33 @@ include '../includes/customer_header.php';
 <span style="font-weight: bold; color: #2ecc71;">$<?php echo number_format($row['total_price'], 2); ?></span>
 </td>
 <td style="padding: 15px;">
-<?php 
+<?php
      $status = $row['status'];
      $bg = "rgba(255,255,255,0.1)";
-     $color = "#f1c40f"; 
-     if($status == 'Confirmed') { $color = "#2ecc71"; $bg = "rgba(46, 204, 113, 0.1)"; }
+    $color = "#f1c40f";
+    if($status == 'Confirmed') { $color = "#2ecc71"; $bg = "rgba(46, 204, 113, 0.1)"; }
     if($status == 'Cancelled') { $color = "#e74c3c"; $bg = "rgba(231, 76, 60, 0.1)"; }
- ?>
+?>
 <span style="background: <?php echo $bg; ?>; color: <?php echo $color; ?>; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; border: 1px solid <?php echo $color; ?>55;">
 <?php echo $status; ?>
 </span>
+</td>
+<td style="padding: 15px; text-align: center;">
+<?php if($status == 'Pending'): ?>
+<a href="../controller/cancel_booking.php?id=<?php echo $row['id']; ?>" 
+    onclick="return confirm('Are you sure you want to cancel this booking?');" 
+    style="text-decoration: none;">
+<button class="btn" style="background: #e74c3c; margin: 0; padding: 5px 10px; font-size: 11px;">Cancel</button>
+</a>
+<?php else: ?>
+<span style="font-size: 11px; opacity: 0.4;">No Actions</span>
+<?php endif; ?>
 </td>
 </tr>
 <?php endwhile; ?>
 <?php else: ?>
 <tr>
-<td colspan="4" style="padding: 50px; text-align: center; opacity: 0.5;">
+<td colspan="5" style="padding: 50px; text-align: center; opacity: 0.5;">
 <div style="font-size: 40px; margin-bottom: 10px;">🏟️</div>
 <p>You haven't made any bookings yet.</p>
 </td>
