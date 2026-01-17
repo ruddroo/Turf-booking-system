@@ -23,7 +23,7 @@ include '../includes/customer_header.php';
     <p>Welcome back to GreenField Turf. Ready for a match?</p>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
         <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px;">
-            <h3>My Stats</h3>
+            <h3>My Booking List</h3>
             <p style="font-size: 24px; margin: 10px 0;">⚽ <?php echo $total_bookings; ?> Bookings</p>
             <a href="my_bookings.php" style="color: #2ecc71; text-decoration: none; font-size: 14px;">View History →</a>
         </div>
